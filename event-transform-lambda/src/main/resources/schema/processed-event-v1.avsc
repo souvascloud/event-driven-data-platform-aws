@@ -1,0 +1,35 @@
+{
+  "type": "record",
+  "name": "ProcessedEvent",
+  "namespace": "com.souvanik.event",
+  "fields": [
+
+    { "name": "eventId", "type": ["null", "string"], "default": null },
+    { "name": "eventType", "type": ["null", "string"], "default": null },
+    { "name": "userId", "type": ["null", "string"], "default": null },
+
+    { "name": "eventTimeUtc", "type": ["null", "string"], "default": null },
+    { "name": "eventTimeIst", "type": ["null", "string"], "default": null },
+    { "name": "eventDate", "type": ["null", "string"], "default": null },
+    { "name": "eventHour", "type": ["null", "int"], "default": null },
+
+    { "name": "amount", "type": ["null", "double"], "default": null },
+    { "name": "paymentMethod", "type": ["null", "string"], "default": null },
+
+    { "name": "amountCategory", "type": ["null", "string"], "default": null },
+    { "name": "highValue", "type": ["null", "boolean"], "default": null },
+
+    { "name": "deviceType", "type": ["null", "string"], "default": null },
+    { "name": "city", "type": ["null", "string"], "default": null },
+
+    { "name": "errorCode", "type": ["null", "string"], "default": null },
+
+    { "name": "source", "type": ["null", "string"], "default": null },
+    { "name": "version", "type": ["null", "string"], "default": null },
+
+    { "name": "processedAt", "type": ["null", "string"], "default": null },
+
+    {"name": "schemaVersion", "type": ["null", "string"], "default": null}
+
+  ]
+}

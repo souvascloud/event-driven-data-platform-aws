@@ -1,0 +1,26 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: event-ingestion-service
+
+aws:
+  region: ap-south-1
+
+  sqs:
+    queue-url: ${SQS_QUEUE_URL}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    root: INFO
+    com.eventplatform: DEBUG

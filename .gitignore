@@ -1,0 +1,63 @@
+# ========================
+# Build outputs (ALL modules)
+# ========================
+target/
+build/
+out/
+
+# ========================
+# Maven Wrapper
+# ========================
+.mvn/wrapper/maven-wrapper.jar
+
+# ========================
+# IDE files
+# ========================
+
+# IntelliJ
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# ========================
+# OS files
+# ========================
+.DS_Store
+Thumbs.db
+
+# ========================
+# Logs
+# ========================
+*.log
+logs/
+
+# ========================
+# Environment / secrets
+# ========================
+.env
+*.env
+
+# ========================
+# Lambda artifacts
+# ========================
+*.jar
+dependency-reduced-pom.xml
+
+# ========================
+# Temporary files
+# ========================
+*.tmp
+*.swp
+
+# ========================
+# Test outputs
+# ========================
+surefire-reports/
+
