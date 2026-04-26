@@ -25,7 +25,6 @@ import java.util.*;
  * https://opensource.org/licenses/MIT
  */
 public class TransformServiceImpl implements TransformService {
-
     private static final Logger logger = LoggerFactory.getLogger(TransformServiceImpl.class);
 
     private final S3Service s3Service;
@@ -49,6 +48,7 @@ public class TransformServiceImpl implements TransformService {
             logger.info("event=transform_start raw_key={} decoded_key={}", rawKey, key);
 
             try {
+
                 String content = s3Service.read(bucket, key);
 
                 List<Map<String, Object>> events = objectMapper.readValue(content, List.class);
@@ -69,7 +69,9 @@ public class TransformServiceImpl implements TransformService {
 
                     ProcessedEvent transformed = transformer.transform(e);
 
-                    String groupKey = transformed.getEventType() + "_" + transformed.getEventDate();
+                    String groupKey =
+                            transformed.getEventType() + "_" +
+                                    transformed.getEventDate();
 
                     groupedEvents
                             .computeIfAbsent(groupKey, k -> new ArrayList<>())
@@ -81,23 +83,46 @@ public class TransformServiceImpl implements TransformService {
 
                     List<ProcessedEvent> eventList = entry.getValue();
 
+                    if (eventList.isEmpty()) continue;
+
+                    ProcessedEvent sample = eventList.get(0);
+
+                    // Partition fields
+                    String eventType = sample.getEventType().toLowerCase();
+                    String date = sample.getEventDate(); // yyyy-MM-dd
+
+                    String[] parts = date.split("-");
+                    String year = parts[0];
+                    String month = parts[1];
+                    String day = parts[2];
+
                     String fileName = generateFileName();
 
-                    String newKey = S3KeyBuilder.buildKey(eventList.get(0), fileName);
+                    String partitionPath =
+                            "processed/" +
+                                    "event_type=" + eventType + "/" +
+                                    "year=" + year + "/" +
+                                    "month=" + month + "/" +
+                                    "day=" + day + "/";
+
+                    String finalKey = partitionPath + fileName;
+
+                    // Convert to Parquet
                     byte[] parquetBytes =
                             ParquetWriterUtil.writeToParquet(eventList, "v1");
 
-                    String parquetKey = newKey.replace(".json", ".parquet");
+                    // Upload
+                    s3Service.writeBytes(bucket, finalKey, parquetBytes);
 
-                    s3Service.writeBytes(bucket, parquetKey, parquetBytes);
-
-                    logger.info("event=partition_write_success eventType={} count={} key={}",
-                            eventList.get(0).getEventType(),
+                    logger.info(
+                            "event=partition_write_success eventType={} count={} key={}",
+                            eventType,
                             eventList.size(),
-                            newKey);
+                            finalKey
+                    );
                 }
 
-                logger.info("event=transform_success input={}", key);
+                logger.info("event=transform_success input_key={}", key);
 
             } catch (Exception ex) {
                 logger.error("event=transform_failed key={}", key, ex);
@@ -106,15 +131,20 @@ public class TransformServiceImpl implements TransformService {
         });
     }
 
+
     private String decode(String rawKey) {
         try {
-            return URLDecoder.decode(rawKey, "UTF-8");
+            return URLDecoder.decode(rawKey, StandardCharsets.UTF_8.toString());
         } catch (Exception e) {
             throw new RuntimeException("Failed to decode S3 key", e);
         }
     }
 
+
     private String generateFileName() {
-        return "events_" + System.currentTimeMillis() + "_" + UUID.randomUUID() + ".json";
+        return "events_" +
+                System.currentTimeMillis() + "_" +
+                UUID.randomUUID() +
+                ".parquet";
     }
 }

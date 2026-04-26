@@ -22,16 +22,28 @@ public class AppCrashTransformer extends AbstractBaseTransformer {
 
     @Override
     public ProcessedEvent transform(Map<String, Object> e) {
-
         Map<String, Object> payload = (Map<String, Object>) e.get("payload");
 
         String errorCode = null;
 
         if (payload != null) {
 
-            Map<String, Object> error = (Map<String, Object>) payload.get("error");
-            if (error != null) {
-                errorCode = (String) error.get("code");
+
+            Object errorObj = payload.get("error");
+            if (errorObj instanceof Map) {
+                Map<String, Object> error = (Map<String, Object>) errorObj;
+                if (error.get("code") != null) {
+                    errorCode = error.get("code").toString();
+                }
+            }
+
+            if (errorCode == null && payload.get("errorCode") != null) {
+                errorCode = payload.get("errorCode").toString();
+            }
+
+
+            if (errorCode == null && payload.get("code") != null) {
+                errorCode = payload.get("code").toString();
             }
         }
 
