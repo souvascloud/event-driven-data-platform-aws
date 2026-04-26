@@ -54,6 +54,7 @@ Client → Ingestion Service → SQS → Processing Service → S3 (Raw)
 
 #  Architecture Diagram (PlantUML)
 
+<img width="1315" height="586" alt="architecture diagram-data-pipeline" src="https://github.com/user-attachments/assets/7318eaab-693a-4eae-9084-baa0fb925209" />
 
 
 ---
