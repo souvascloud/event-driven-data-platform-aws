@@ -153,7 +153,6 @@ Removed MSCK REPAIR
 
 ```plaintext
 event-driven-data-platform-aws/
-│
 ├── event-ingestion-service
 ├── processing-service
 ├── event-transform-lambda
@@ -162,41 +161,69 @@ event-driven-data-platform-aws/
 
 ---
 
-#  Modules Explained
 
----
+## Modules
 
-## event-ingestion-service
+### 1. event-ingestion-service
 
-Spring Boot API for receiving events.
+Handles external interaction via REST APIs.
 
-### Responsibilities
-
-```plaintext
+Responsibilities:
 - Accept batch events
-- Validate input
-- Send to SQS
-- Maintain contract
-```
+- Validate request payloads
+- Publish events to SQS
+- Maintain ingestion contract
+
+Design Focus:
+- API layer only (no business logic leakage)
+- Loose coupling via messaging
 
 ---
 
-##  processing-service
+### 2. processing-service
 
-Consumes SQS and writes raw data.
+Acts as the raw data persistence layer.
 
-### Responsibilities
+Responsibilities:
+- Consume events from SQS
+- Perform lightweight validation/enrichment
+- Batch events for efficient writes
+- Store events in S3 as JSON
 
-```plaintext
-- Poll messages from SQS
-- Batch events
-- Write JSON to S3 (raw zone)
--  Ensure durability
-```
+Why this layer exists:
+- Decouples ingestion from storage
+- Improves reliability through buffering
+- Enables replay and debugging from raw data
 
 ---
 
-##  event-transform-lambda
+### 3. event-transform-lambda
+
+Responsible for transforming raw data into analytics-ready format.
+
+Responsibilities:
+- Triggered automatically on S3 upload
+- Applies transformation using Strategy pattern
+- Converts JSON → Parquet
+- Writes partitioned data to S3
+
+Design Focus:
+- Serverless processing
+- Schema-driven transformation (Avro)
+- Extensibility for new event types
+
+---
+
+## Storage Strategy
+
+### Raw Data (Immutable)
+
+raw/
+  user-events/
+    year=2026/month=04/day=25/
+      events_*.json
+
+### Processed Data (Analytics Ready)
 
 Triggered on S3 object creation.
 
