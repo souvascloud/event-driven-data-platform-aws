@@ -180,25 +180,3 @@ GROUP BY errorcode;
 ```
 
 ---
-
-#  Project Tags
-
-```plaintext
-aws
-java
-spring-boot
-data-engineering
-event-driven-architecture
-aws-sqs
-aws-s3
-aws-lambda
-aws-athena
-data-lake
-parquet
-big-data
-microservices
-distributed-systems
-partition-projection
-```
-
----

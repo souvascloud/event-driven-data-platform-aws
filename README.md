@@ -419,3 +419,16 @@ This project demonstrates:
 ```
 
 ---
+## License
+
+Internal / Educational / Enterprise Architecture Reference
+
+---
+
+## Author
+
+Senior Software Engineer
+
+Passionate about backend systems, design, and clean code.
+
+LinkedIn: https://www.linkedin.com/in/souvanik-saha
